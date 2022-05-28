@@ -15,7 +15,8 @@
     "lint": "run-p --aggregate-output --continue-on-error lint:*",
     "lint:es": "eslint --ext .ts,.js .",
     "lint:md": "markdownlint --dot --ignore-path .gitignore .",
-    "test": "jest"
+    "test": "jest",
+    "prepare": "husky install"
   },
   "engines": {
     "node": ">=16",
@@ -39,6 +40,7 @@
     "eslint-plugin-jest": "^26.3.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^4.0.0",
+    "husky": "^8.0.1",
     "jest": "^28.1.0",
     "markdownlint": "^0.25.1",
     "markdownlint-cli": "^0.31.1",

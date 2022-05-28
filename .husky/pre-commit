@@ -1,0 +1,8 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+if [ -f ~/.bash_profile ]; then
+  . ~/.bash_profile
+fi
+
+yarn eslint --no-error-on-unmatched-pattern $(git diff --staged --name-only HEAD | grep -E '\.(js|ts)$' | xargs)
+
