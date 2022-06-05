@@ -1,17 +1,13 @@
-import { getDriver } from '../neo4j'
+import { one } from '../neo4j'
 import Profile from '../types/profile'
 
 export const getProfile = async (username: string): Promise<Profile | null> => {
-  const session = getDriver().session()
-  const result = await session.run(
+  const record = await one(
     `
     MATCH (u:User { username: $username })
     return u
-    `,
+  `,
     { username },
   )
-  const [record] = result.records
-  if (!record) return null
-  const { properties: profile } = record.get('u')
-  return profile
+  return record ? record.get('u').properties : null
 }
