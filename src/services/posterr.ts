@@ -91,13 +91,30 @@ export const list = async (username: string, skip: number): Promise<Array<Post>>
   })
 }
 
+export const listAll = async (skip: number): Promise<Array<Post>> => {
+  const records = await all(
+    `
+    MATCH (author:User)-[:POSTS]->(p:Post) 
+    OPTIONAL MATCH (p)-[:REPOST]->(reposted:Post)<-[:POSTS]-(repostedUser:User)
+    OPTIONAL MATCH (p)-[:QUOTES]->(quoted:Post)<-[:POSTS]-(quotedUser:User)
+    RETURN author, p, reposted, quoted, repostedUser, quotedUser
+    ORDER BY p.createdAt DESC
+    SKIP $skip
+    LIMIT 10
+  `,
+    { skip: int(skip) },
+  )
+  return buildList(records)
+}
+
 export const listFollowing = async (username: string, skip: number): Promise<Array<Post>> => {
   const records = await all(
     `
-    MATCH (:User {username: $username})-[:FOLLOWS]->(:User)-[:POSTS]->(p:Post) 
+    MATCH (u:User {username: $username})-[:FOLLOWS]->(author:User)-[:POSTS]->(p:Post) 
     OPTIONAL MATCH (p)-[:REPOST]->(reposted:Post)<-[:POSTS]-(repostedUser:User)
     OPTIONAL MATCH (p)-[:QUOTES]->(quoted:Post)<-[:POSTS]-(quotedUser:User)
-    RETURN p, reposted, quoted, repostedUser, quotedUser
+    RETURN author, p, reposted, quoted, repostedUser, quotedUser
+    ORDER BY p.createdAt DESC
     SKIP $skip
     LIMIT 10
   `,

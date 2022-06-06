@@ -1,5 +1,6 @@
 import express, { json } from 'express'
 import profile from './controllers/user/profile'
+import listAll from './controllers/posterr/listAll'
 import list from './controllers/posterr/list'
 import get from './controllers/posterr/get'
 import post from './controllers/posterr/post'
@@ -24,6 +25,7 @@ app.use(json())
 
 app.get('/profile/:username', profile)
 app.get('/posts/:username', list)
+app.get('/home/:username', listAll)
 app.get('/post/:postId', get)
 app.post('/post/:username', ...postValidations, post)
 app.post('/repost/:username', postExists, ...postValidations, repost)
