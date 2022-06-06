@@ -20,7 +20,7 @@ const baseBuild = ({ properties: { id, createdAt, text } }: Node, author?: Node)
 
 const build = (r: Record): Post => {
   const post = baseBuild(r.get('p'))
-  if (r.get('reposted')) post.reposted = baseBuild(r.get('reposted'), r.get('repostedUser'))
+  if (r.has('reposted') && r.get('reposted')) post.reposted = baseBuild(r.get('reposted'), r.get('repostedUser'))
   if (r.get('quoted')) post.quoted = baseBuild(r.get('quoted'), r.get('quotedUser'))
   post.author = r.get('author').properties as Profile
   return post
@@ -135,4 +135,17 @@ export const get = async (postId: string): Promise<Post | undefined> => {
     { postId: Number(postId) },
   )
   return r ? build(r) : undefined
+}
+
+export const search = async (text: string): Promise<Array<Post>> => {
+  const records = await all(
+    `
+    CALL db.index.fulltext.queryNodes('TextIndex', $text) YIELD node
+    MATCH (author:User)-[:POSTS]->(node)
+    OPTIONAL MATCH (node)-[:QUOTES]->(quoted:Post)<-[:POSTS]-(quotedUser:User)
+    return author, node AS p, quoted, quotedUser
+    `,
+    { text },
+  )
+  return buildList(records)
 }
