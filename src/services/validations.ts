@@ -3,7 +3,7 @@ import { one } from '../neo4j'
 export const day = 1_000 * 60 * 60 * 24
 export const MAX_POST_PER_DAY = 5
 
-export const userExists = async (username: string): Promise<Boolean> => {
+export const checkUserExists = async (username: string): Promise<Boolean> => {
   return one('MATCH (u:User { username: $username }) RETURN u', { username }).then((record) => !!record)
 }
 

@@ -1,11 +1,23 @@
 import { Request, Response, NextFunction } from 'express'
 import { param, body, validationResult } from 'express-validator'
-import { validPostLimit, userExists, checkPostExists } from '../../services/validations'
+import { validPostLimit, checkUserExists, checkPostExists } from '../../services/validations'
 
 export const MAX_POST_LENGTH = 777
 
-export const userExistsValidation = param('username').custom(async (username) => {
-  if (!(await userExists(username))) throw new Error('User not found')
+export const userExists = param('username').custom(async (username) => {
+  if (!(await checkUserExists(username))) throw new Error('User not found')
+  return true
+})
+
+export const bodyUserExists = body('username').custom(async (username) => {
+  if (!(await checkUserExists(username))) throw new Error('User not found')
+  return true
+})
+
+export const cantFollowYourself = param('username').custom((username: string, { req }) => {
+  const toUsername = req.body.username as string
+  console.log(toUsername, username, toUsername != username)
+  if (toUsername === username) throw new Error("You can't follow yourself")
   return true
 })
 

@@ -1,13 +1,13 @@
 import app from '../../app'
 import request from 'supertest' // eslint-disable-line node/no-unpublished-import
-import { validPostLimit, userExists } from '../../services/validations'
+import { validPostLimit, checkUserExists } from '../../services/validations'
 import { MAX_POST_LENGTH } from '../../controllers/posterr/validations'
 jest.mock('../../services/user')
 jest.mock('../../services/validations')
 
 describe('create post', () => {
   test('should validate user exists', async () => {
-    jest.mocked(userExists).mockResolvedValue(false)
+    jest.mocked(checkUserExists).mockResolvedValue(false)
     const response = await request(app)
       .post('/post/blabla')
       .send({ text: '' })
@@ -24,7 +24,7 @@ describe('create post', () => {
   })
 
   test('should validate exeeds post limit', async () => {
-    jest.mocked(userExists).mockResolvedValue(true)
+    jest.mocked(checkUserExists).mockResolvedValue(true)
     jest.mocked(validPostLimit).mockResolvedValue(false)
     const response = await request(app)
       .post('/post/blabla')
@@ -42,7 +42,7 @@ describe('create post', () => {
   })
 
   test('should validate text length', async () => {
-    jest.mocked(userExists).mockResolvedValue(true)
+    jest.mocked(checkUserExists).mockResolvedValue(true)
     jest.mocked(validPostLimit).mockResolvedValue(true)
     const text = Array(MAX_POST_LENGTH + 1)
       .fill('0')
