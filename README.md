@@ -1,4 +1,4 @@
-# Strinder Posterr
+# Little experiment using neo4j to power a twitter like backend database
 
 author: Dalton Oliveira
 
